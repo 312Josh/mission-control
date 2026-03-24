@@ -265,33 +265,10 @@ export class OpenClawClient extends EventEmitter {
               const scopes = ['operator.admin'];
 
               // Build device identity for the connect params
+              // Skip device identity to avoid "pairing required" rejection
+              // Token auth is sufficient for local connections
               const clientId = 'cli';
-              let device: Record<string, unknown> | undefined;
-              if (this.deviceIdentity) {
-                const payload = buildDeviceAuthPayload({
-                  deviceId: this.deviceIdentity.deviceId,
-                  clientId,
-                  clientMode: 'ui',
-                  role,
-                  scopes,
-                  signedAtMs,
-                  token: this.token || null,
-                  nonce,
-                });
-                const signature = signDevicePayload(this.deviceIdentity.privateKeyPem, payload);
-                device = {
-                  id: this.deviceIdentity.deviceId,
-                  publicKey: publicKeyRawBase64Url(this.deviceIdentity.publicKeyPem),
-                  signature,
-                  signedAt: signedAtMs,
-                  nonce,
-                };
-                console.log('[OpenClaw] Device identity prepared:', {
-                  deviceId: this.deviceIdentity.deviceId,
-                  hasSignature: !!signature,
-                  nonce,
-                });
-              }
+              const device: Record<string, unknown> | undefined = undefined;
 
               const response = {
                 type: 'req',
