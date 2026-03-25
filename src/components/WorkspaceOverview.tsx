@@ -3,18 +3,11 @@
 import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import {
-  Bell,
-  Bot,
   ChartLine,
   CloudUpload,
   Gauge,
-  HelpCircle,
-  LayoutDashboard,
   Lock,
-  Plus,
   Rocket,
-  Search,
-  Settings,
   ShieldCheck,
   Zap,
 } from 'lucide-react';
@@ -49,6 +42,28 @@ const STATUS_LABEL: Record<Task['status'], string> = {
   review: 'Review',
   done: 'Complete',
 };
+
+function MaterialIcon({
+  name,
+  filled = false,
+  className = '',
+}: {
+  name: string;
+  filled?: boolean;
+  className?: string;
+}) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`material-symbols-outlined leading-none ${className}`}
+      style={{
+        fontVariationSettings: `'FILL' ${filled ? 1 : 0}, 'wght' 500, 'GRAD' 0, 'opsz' 20`,
+      }}
+    >
+      {name}
+    </span>
+  );
+}
 
 function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
@@ -322,7 +337,7 @@ export function WorkspaceOverview({ workspace }: { workspace: Workspace }) {
       <aside className="fixed left-0 top-0 z-40 hidden h-screen w-64 flex-col bg-[#1B1B1D] px-4 py-6 lg:flex">
         <div className="mb-10 flex items-center gap-3 px-2">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-[#B3C5FF] to-[#638EFD] shadow-lg shadow-[#B3C5FF]/20">
-            <Rocket className="h-5 w-5 text-[#001849]" />
+            <MaterialIcon name="rocket_launch" filled className="text-[20px] text-[#001849]" />
           </div>
           <div>
             <p className="text-xl font-black uppercase leading-none tracking-[0.16em]">JLM Claw</p>
@@ -335,28 +350,28 @@ export function WorkspaceOverview({ workspace }: { workspace: Workspace }) {
             href={`/workspace/${workspace.slug}`}
             className="flex items-center gap-3 border-r-4 border-[#638EFD] bg-gradient-to-r from-[#638EFD]/10 to-transparent px-3 py-3 text-[#B3C5FF]"
           >
-            <LayoutDashboard className="h-4 w-4" />
+            <MaterialIcon name="dashboard" filled className="text-[20px]" />
             <span className="text-sm font-semibold uppercase tracking-tight">Dashboard</span>
           </Link>
           <Link
             href="/tasks"
             className="flex items-center gap-3 px-3 py-3 text-[#C3C6D5] transition-colors duration-200 hover:bg-[#353437] hover:text-[#E4E2E4]"
           >
-            <Rocket className="h-4 w-4" />
+            <MaterialIcon name="rocket_launch" className="text-[20px]" />
             <span className="text-sm font-semibold uppercase tracking-tight">Mission Control</span>
           </Link>
           <Link
             href="/agents"
             className="flex items-center gap-3 px-3 py-3 text-[#C3C6D5] transition-colors duration-200 hover:bg-[#353437] hover:text-[#E4E2E4]"
           >
-            <Bot className="h-4 w-4" />
+            <MaterialIcon name="smart_toy" className="text-[20px]" />
             <span className="text-sm font-semibold uppercase tracking-tight">Automations</span>
           </Link>
           <Link
             href="/system"
             className="flex items-center gap-3 px-3 py-3 text-[#C3C6D5] transition-colors duration-200 hover:bg-[#353437] hover:text-[#E4E2E4]"
           >
-            <ChartLine className="h-4 w-4" />
+            <MaterialIcon name="analytics" className="text-[20px]" />
             <span className="text-sm font-semibold uppercase tracking-tight">Analytics</span>
           </Link>
         </nav>
@@ -376,14 +391,14 @@ export function WorkspaceOverview({ workspace }: { workspace: Workspace }) {
             href="/settings"
             className="flex items-center gap-3 px-3 py-3 text-[#C3C6D5] transition-colors duration-200 hover:bg-[#353437] hover:text-[#E4E2E4]"
           >
-            <Settings className="h-4 w-4" />
+            <MaterialIcon name="settings" className="text-[20px]" />
             <span className="text-sm font-semibold uppercase tracking-tight">Settings</span>
           </Link>
           <a
             href="#"
             className="flex items-center gap-3 px-3 py-3 text-[#C3C6D5] transition-colors duration-200 hover:bg-[#353437] hover:text-[#E4E2E4]"
           >
-            <HelpCircle className="h-4 w-4" />
+            <MaterialIcon name="help_outline" className="text-[20px]" />
             <span className="text-sm font-semibold uppercase tracking-tight">Support</span>
           </a>
         </div>
@@ -391,7 +406,7 @@ export function WorkspaceOverview({ workspace }: { workspace: Workspace }) {
 
       <header className="fixed top-0 z-30 flex h-16 w-full items-center justify-between border-b border-[#434653]/20 bg-[#131315]/80 px-4 backdrop-blur-xl lg:left-64 lg:w-[calc(100%-16rem)] lg:px-8">
         <div className="relative w-full max-w-xl">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#C3C6D5]" />
+          <MaterialIcon name="search" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[19px] text-[#C3C6D5]" />
           <input
             type="text"
             value={searchText}
@@ -403,7 +418,7 @@ export function WorkspaceOverview({ workspace }: { workspace: Workspace }) {
 
         <div className="ml-4 flex items-center gap-5">
           <button className="relative rounded-lg p-2 text-[#C3C6D5] transition-colors hover:bg-[#1F1F21]">
-            <Bell className="h-5 w-5" />
+            <MaterialIcon name="notifications" className="text-[20px]" />
             <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-[#4AE176]" />
           </button>
           <button
@@ -412,7 +427,7 @@ export function WorkspaceOverview({ workspace }: { workspace: Workspace }) {
             className="hidden rounded-lg p-2 text-[#C3C6D5] transition-colors hover:bg-[#1F1F21] md:block"
             title="Create new mission"
           >
-            <Plus className="h-5 w-5" />
+            <MaterialIcon name="add" className="text-[20px]" />
           </button>
 
           <div className="hidden h-8 w-px bg-[#434653]/30 md:block" />
