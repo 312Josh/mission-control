@@ -4,10 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
-import { Header } from '@/components/Header';
-import { AgentsSidebar } from '@/components/AgentsSidebar';
-import { MissionQueue } from '@/components/MissionQueue';
-import { LiveFeed } from '@/components/LiveFeed';
+import { WorkspaceOverview } from '@/components/WorkspaceOverview';
 import { SSEDebugPanel } from '@/components/SSEDebugPanel';
 import { useMissionControl } from '@/lib/store';
 import { useSSE } from '@/hooks/useSSE';
@@ -201,19 +198,8 @@ export default function WorkspacePage() {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-mc-bg overflow-hidden">
-      <Header workspace={workspace} />
-
-      <div className="flex-1 flex overflow-hidden">
-        {/* Agents Sidebar */}
-        <AgentsSidebar workspaceId={workspace.id} />
-
-        {/* Main Content Area */}
-        <MissionQueue workspaceId={workspace.id} />
-
-        {/* Live Feed */}
-        <LiveFeed />
-      </div>
+    <div className="min-h-screen bg-mc-bg">
+      <WorkspaceOverview workspace={workspace} />
 
       {/* Debug Panel - only shows when debug mode enabled */}
       <SSEDebugPanel />

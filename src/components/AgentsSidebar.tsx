@@ -25,6 +25,12 @@ export function AgentsSidebar({ workspaceId }: AgentsSidebarProps) {
 
   const toggleMinimize = () => setIsMinimized(!isMinimized);
 
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 1280) {
+      setIsMinimized(true);
+    }
+  }, []);
+
   // Load OpenClaw session status for all agents on mount
   const loadOpenClawSessions = useCallback(async () => {
     for (const agent of agents) {
@@ -118,7 +124,7 @@ export function AgentsSidebar({ workspaceId }: AgentsSidebarProps) {
   return (
     <aside
       className={`bg-mc-bg-secondary border-r border-mc-border flex flex-col transition-all duration-300 ease-in-out ${
-        isMinimized ? 'w-12' : 'w-64'
+        isMinimized ? 'w-12' : 'w-56 xl:w-64'
       }`}
     >
       {/* Header */}

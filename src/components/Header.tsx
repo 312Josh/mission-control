@@ -17,6 +17,7 @@ export function Header({ workspace }: HeaderProps) {
   const { agents, tasks, isOnline } = useMissionControl();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [activeSubAgents, setActiveSubAgents] = useState(0);
+  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -44,6 +45,24 @@ export function Header({ workspace }: HeaderProps) {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    if (!workspace) return;
+
+    const loadWorkspaces = async () => {
+      try {
+        const res = await fetch('/api/workspaces');
+        if (res.ok) {
+          const data = (await res.json()) as Workspace[];
+          setWorkspaces(data);
+        }
+      } catch (error) {
+        console.error('Failed to load workspaces for selector:', error);
+      }
+    };
+
+    void loadWorkspaces();
+  }, [workspace]);
+
   const workingAgents = agents.filter((a) => a.status === 'working').length;
   const activeAgents = workingAgents + activeSubAgents;
   const tasksInQueue = tasks.filter((t) => t.status !== 'done' && t.status !== 'review').length;
@@ -69,10 +88,21 @@ export function Header({ workspace }: HeaderProps) {
               <ChevronLeft className="w-4 h-4" />
               <LayoutGrid className="w-4 h-4" />
             </Link>
-            <span className="text-mc-text-secondary">/</span>
-            <div className="flex items-center gap-2 px-3 py-1 bg-mc-bg-tertiary rounded">
-              <span className="text-lg">{workspace.icon}</span>
-              <span className="font-medium">{workspace.name}</span>
+            <div className="relative">
+              <select
+                value={workspace.slug}
+                onChange={(event) => router.push(`/workspace/${event.target.value}`)}
+                className="appearance-none bg-mc-bg-tertiary border border-mc-border rounded pl-3 pr-8 py-1.5 text-sm text-mc-text focus:outline-none focus:border-mc-accent"
+              >
+                {(workspaces.length > 0 ? workspaces : [workspace]).map((item) => (
+                  <option key={item.id} value={item.slug}>
+                    {item.icon} {item.name}
+                  </option>
+                ))}
+              </select>
+              <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-mc-text-secondary text-xs">
+                ▾
+              </span>
             </div>
           </div>
         ) : (
