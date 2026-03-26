@@ -262,7 +262,7 @@ export class OpenClawClient extends EventEmitter {
               const requestId = crypto.randomUUID();
               const signedAtMs = Date.now();
               const role = 'operator';
-              const scopes = ['operator.admin'];
+              const scopes = ['operator.admin', 'operator.read', 'operator.write'];
               const clientId = 'gateway-client';
               const clientMode = 'backend';
 
@@ -302,7 +302,7 @@ export class OpenClawClient extends EventEmitter {
                     platform: process.platform || 'linux',
                     mode: clientMode,
                   },
-                  auth: { token: this.token },
+                  auth: { token: this.token, password: process.env.OPENCLAW_GATEWAY_PASSWORD || '' },
                   role,
                   scopes,
                   device,
