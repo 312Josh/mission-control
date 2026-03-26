@@ -262,13 +262,32 @@ export class OpenClawClient extends EventEmitter {
               const requestId = crypto.randomUUID();
               const signedAtMs = Date.now();
               const role = 'operator';
-              const scopes = ['operator.admin', 'operator.read', 'operator.write'];
+              const scopes = ['operator.admin'];
+              const clientId = 'gateway-client';
+              const clientMode = 'backend';
 
-              // Build device identity for the connect params
-              // Skip device identity to avoid "pairing required" rejection
-              // Token auth is sufficient for local connections
-              const clientId = 'cli';
-              const device: Record<string, unknown> | undefined = undefined;
+              // Build device identity with signed nonce for scope preservation
+              let device: Record<string, unknown> | undefined = undefined;
+              if (this.deviceIdentity) {
+                const payload = buildDeviceAuthPayload({
+                  deviceId: this.deviceIdentity.deviceId,
+                  clientId,
+                  clientMode,
+                  role,
+                  scopes,
+                  signedAtMs,
+                  token: this.token || null,
+                  nonce: nonce || '',
+                });
+                const signature = signDevicePayload(this.deviceIdentity.privateKeyPem, payload);
+                device = {
+                  id: this.deviceIdentity.deviceId,
+                  publicKey: publicKeyRawBase64Url(this.deviceIdentity.publicKeyPem),
+                  signature,
+                  signedAt: signedAtMs,
+                  nonce: nonce || '',
+                };
+              }
 
               const response = {
                 type: 'req',
@@ -280,8 +299,8 @@ export class OpenClawClient extends EventEmitter {
                   client: {
                     id: clientId,
                     version: '1.0.1',
-                    platform: process.platform || 'web',
-                    mode: 'ui',
+                    platform: process.platform || 'linux',
+                    mode: clientMode,
                   },
                   auth: { token: this.token },
                   role,
