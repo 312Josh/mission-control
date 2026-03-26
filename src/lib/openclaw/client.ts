@@ -262,7 +262,7 @@ export class OpenClawClient extends EventEmitter {
               const requestId = crypto.randomUUID();
               const signedAtMs = Date.now();
               const role = 'operator';
-              const scopes = ['operator.admin'];
+              const scopes = ['operator.admin', 'operator.read', 'operator.write'];
 
               // Build device identity for the connect params
               // Skip device identity to avoid "pairing required" rejection
