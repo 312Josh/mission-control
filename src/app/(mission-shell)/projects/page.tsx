@@ -1,6 +1,6 @@
-import { SectionStubPage } from '@/components/navigation/SectionStubPage';
+import { MissionSectionLivePage } from '@/components/navigation/MissionSectionLivePage';
 import { missionSectionBySlug } from '@/lib/mission-sections';
 
 export default function SectionPage() {
-  return <SectionStubPage section={missionSectionBySlug['projects']} />;
+  return <MissionSectionLivePage section={missionSectionBySlug['projects']} />;
 }

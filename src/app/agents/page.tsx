@@ -231,7 +231,15 @@ export default function AgentsPage() {
         <section className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {cards.map((agent) => {
             const busyAction = actionState[agent.id];
-            const noData = sourceUnavailable || !agent.session_key;
+            const sessionStatus = sourceUnavailable ? null : agent.session_status || 'standby';
+            const sessionKey = sourceUnavailable ? null : agent.session_key || 'No active session';
+            const contextValue = sourceUnavailable ? null : agent.context_percent ?? 0;
+            const modelValue = sourceUnavailable ? null : agent.model || 'Not reported';
+            const lastActivityValue = sourceUnavailable
+              ? 'No data'
+              : agent.last_activity
+                ? formatRelativeTime(agent.last_activity)
+                : 'No recent activity';
 
             return (
               <article
@@ -245,42 +253,42 @@ export default function AgentsPage() {
                     </div>
                     <div className="min-w-0">
                       <h2 className="truncate text-sm font-black uppercase tracking-tight text-[#E4E2E4] sm:text-base">{agent.name}</h2>
-                      <p className="mt-1 truncate text-xs text-[#C3C6D5]">{agent.session_key || 'No data'}</p>
+                      <p className="mt-1 truncate text-xs text-[#C3C6D5]">{sessionKey || 'No data'}</p>
                     </div>
                   </div>
 
                   <span
-                    className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.14em] ${statusBadge(noData ? null : agent.session_status)}`}
+                    className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.14em] ${statusBadge(sessionStatus)}`}
                   >
-                    {(noData ? null : agent.session_status) || 'No data'}
+                    {sessionStatus || 'No data'}
                   </span>
                 </div>
 
                 <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
                   <div className="rounded-lg border border-[#434653] bg-[#2A2A2C]/60 px-3 py-2">
                     <dt className="text-[10px] font-black uppercase tracking-[0.18em] text-[#C3C6D5]">Context %</dt>
-                    <dd className={`mt-1 text-sm font-semibold tabular-nums ${contextTone(noData ? null : agent.context_percent)}`}>
-                      {noData || agent.context_percent === null ? 'No data' : `${agent.context_percent}%`}
+                    <dd className={`mt-1 text-sm font-semibold tabular-nums ${contextTone(contextValue)}`}>
+                      {contextValue === null ? 'No data' : `${contextValue}%`}
                     </dd>
                   </div>
 
                   <div className="rounded-lg border border-[#434653] bg-[#2A2A2C]/60 px-3 py-2">
                     <dt className="text-[10px] font-black uppercase tracking-[0.18em] text-[#C3C6D5]">Model</dt>
                     <dd className="mt-1 truncate text-sm font-semibold text-[#E4E2E4]">
-                      {noData ? 'No data' : agent.model || 'No data'}
+                      {modelValue || 'No data'}
                     </dd>
                   </div>
 
                   <div className="rounded-lg border border-[#434653] bg-[#2A2A2C]/60 px-3 py-2">
                     <dt className="text-[10px] font-black uppercase tracking-[0.18em] text-[#C3C6D5]">Last Activity</dt>
                     <dd className="mt-1 text-sm font-semibold text-[#E4E2E4]">
-                      {noData ? 'No data' : formatRelativeTime(agent.last_activity)}
+                      {lastActivityValue}
                     </dd>
                   </div>
 
                   <div className="rounded-lg border border-[#434653] bg-[#2A2A2C]/60 px-3 py-2">
                     <dt className="text-[10px] font-black uppercase tracking-[0.18em] text-[#C3C6D5]">Session Status</dt>
-                    <dd className="mt-1 text-sm font-semibold text-[#E4E2E4]">{noData ? 'No data' : agent.session_status || 'No data'}</dd>
+                    <dd className="mt-1 text-sm font-semibold text-[#E4E2E4]">{sessionStatus || 'No data'}</dd>
                   </div>
                 </dl>
 
@@ -288,7 +296,7 @@ export default function AgentsPage() {
                   <button
                     type="button"
                     onClick={() => void handleAction(agent.id, 'reset')}
-                    disabled={Boolean(busyAction) || noData}
+                    disabled={Boolean(busyAction) || sourceUnavailable}
                     className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-[#DDB7FF]/50 bg-[#6F00BE]/20 px-3 py-2 text-[10px] font-black uppercase tracking-[0.16em] text-[#DDB7FF] transition-colors hover:bg-[#6F00BE]/30 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <MaterialIcon
