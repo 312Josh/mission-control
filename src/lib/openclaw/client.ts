@@ -187,7 +187,17 @@ export class OpenClawClient extends EventEmitter {
         }
         console.log('[OpenClaw] Connecting to:', wsUrl.toString().replace(/token=[^&]+/, 'token=***'));
         console.log('[OpenClaw] Token in URL:', wsUrl.searchParams.has('token'));
-        this.ws = new WebSocket(wsUrl.toString());
+        const isServer = typeof window === 'undefined';
+        if (isServer) {
+          // Avoid the browser-style WebSocket implementation in Node, which injects Origin
+          // and triggers gateway CONTROL_UI origin checks for server-side API routes.
+          // Use the ws package only on the server, loaded dynamically so Next doesn't bundle it for the browser.
+          // eslint-disable-next-line @typescript-eslint/no-require-imports
+          const NodeWebSocket = require('ws') as typeof import('ws');
+          this.ws = new NodeWebSocket.WebSocket(wsUrl.toString()) as unknown as WebSocket;
+        } else {
+          this.ws = new WebSocket(wsUrl.toString());
+        }
 
         const connectionTimeout = setTimeout(() => {
           if (!this.connected) {
@@ -269,12 +279,13 @@ export class OpenClawClient extends EventEmitter {
               const signedAtMs = Date.now();
               const role = 'operator';
               const scopes = GATEWAY_SCOPES;
-              const clientId = 'mission-control';
-              const clientMode = 'operator';
+              const clientId = 'gateway-client';
+              const clientMode = 'backend';
 
-              // Build device identity with signed nonce for scope preservation
+              // Token-auth gateway deployments should not send device pairing material.
+              // Only attach device identity when no shared gateway token is configured.
               let device: Record<string, unknown> | undefined = undefined;
-              if (this.deviceIdentity) {
+              if (!this.token && this.deviceIdentity) {
                 const payload = buildDeviceAuthPayload({
                   deviceId: this.deviceIdentity.deviceId,
                   clientId,

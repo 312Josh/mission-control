@@ -15,8 +15,8 @@ services:
       DATABASE_PATH: /app/data/mission-control.db
       WORKSPACE_BASE_PATH: /app/workspace
       PROJECTS_PATH: /app/workspace/projects
-      # Set this if OpenClaw runs on the host machine:
-      # OPENCLAW_GATEWAY_URL: ws://host.docker.internal:18789
+      OPENCLAW_GATEWAY_URL: ws://host.docker.internal:52943
+      OPENCLAW_GATEWAY_TOKEN: UBidjuqsrx9RgSu0FsbKIitxKjvXUgzNUE8mKCpLfXk
     volumes:
       - mission-control-data:/app/data
       - mission-control-workspace:/app/workspace
