@@ -7,6 +7,12 @@ import { createHash } from 'crypto';
 
 const GATEWAY_URL = process.env.OPENCLAW_GATEWAY_URL || 'ws://127.0.0.1:18789';
 const GATEWAY_TOKEN = process.env.OPENCLAW_GATEWAY_TOKEN || '';
+const GATEWAY_SCOPES = (
+  process.env.OPENCLAW_GATEWAY_SCOPES
+    ?.split(',')
+    .map((scope) => scope.trim())
+    .filter(Boolean) ?? ['operator.read']
+);
 
 // Global deduplication cache that persists across module reloads in Next.js dev
 // Use globalThis to ensure it's shared across all instances
@@ -262,9 +268,9 @@ export class OpenClawClient extends EventEmitter {
               const requestId = crypto.randomUUID();
               const signedAtMs = Date.now();
               const role = 'operator';
-              const scopes = ['operator.admin', 'operator.read', 'operator.write'];
-              const clientId = 'gateway-client';
-              const clientMode = 'backend';
+              const scopes = GATEWAY_SCOPES;
+              const clientId = 'mission-control';
+              const clientMode = 'operator';
 
               // Build device identity with signed nonce for scope preservation
               let device: Record<string, unknown> | undefined = undefined;
@@ -302,10 +308,15 @@ export class OpenClawClient extends EventEmitter {
                     platform: process.platform || 'linux',
                     mode: clientMode,
                   },
-                  auth: { token: this.token, password: process.env.OPENCLAW_GATEWAY_PASSWORD || '' },
+                  auth: { token: this.token },
                   role,
                   scopes,
                   device,
+                  caps: [],
+                  commands: [],
+                  permissions: {},
+                  locale: 'en-US',
+                  userAgent: 'mission-control/1.2.0',
                 }
               };
 
